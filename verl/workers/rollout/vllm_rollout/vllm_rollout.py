@@ -128,18 +128,26 @@ class vLLMRollout(BaseRollout):
             kwargs['stop_token_ids'] = [14924, 16533] #Question, Answer
         elif "deepseek-math" in  config.model_path.lower():
             kwargs['stop_token_ids'] = [3631, 81038, 5726, 77398, 6713] # user, assistant, system
+        elif "qwen3" in config.model_path.lower():
+            # Qwen3 uses same tokenizer base as Qwen2.5 with additional thinking tokens
+            # 151645=<|im_end|>, 151643=<|endoftext|>, 151644=<|im_start|>
+            # 151668=<|end_of_thinking|>
+            kwargs['stop_token_ids'] = [151645, 151643, 151644]
         elif "qwen2.5" in config.model_path.lower():
             if "7b" in config.model_path.lower():
                 kwargs['stop_token_ids'] = [151645, 151643, 872,77091, 1474, 71703, 151644, 8948]
                 if "math" in config.model_path.lower():
                     kwargs['stop_token_ids'] = [151645, 151643, 872, 77091, 1474, 71703, 151644, 8948, 73594]
-                    
+
             elif "1.5b" in config.model_path.lower():
                 kwargs['stop_token_ids'] = [14582, 16141, 31198] # Question, Answer, Problem
             elif "0.5b" in config.model_path.lower():
                 kwargs['stop_token_ids'] = [14582, 16141, 31198] # Question, Answer, Problem
         else:
-            raise NotImplementedError(f"Stop token ids for model path '{config.model_path}' are not implemented")
+            import warnings
+            warnings.warn(f"Stop token ids for model path '{config.model_path}' are not explicitly configured. "
+                         f"Using default EOS token only. You may want to add custom stop tokens.")
+            kwargs['stop_token_ids'] = []
                 
         # supporting adding any sampling params from the config file
         for k in config.keys():

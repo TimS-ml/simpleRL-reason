@@ -101,15 +101,25 @@ def extract_last_boxed(text):
 
     
 def extract_solution(solution_str):
-    model_output= re.sub(r'^.*?<\|im_start\|>assistant', '<|im_start|>assistant', solution_str, flags=re.DOTALL,count = 1)
-    stop_words = ["</s>", "<|im_end|>", "<|endoftext|>"] 
+    # Handle both Qwen2.5 and Qwen3 chat templates
+    model_output = re.sub(r'^.*?<\|im_start\|>assistant', '<|im_start|>assistant', solution_str, flags=re.DOTALL, count=1)
+    stop_words = ["</s>", "<|im_end|>", "<|endoftext|>"]
     for stop_word in stop_words:
         if stop_word in model_output:
             model_output = model_output.split(stop_word)[0].strip()
-    
-    predict_answer = qwen_extract_answer(model_output, data_name="math")
-    extract_boxed_answer = extract_last_boxed(model_output)
-    # True means the boxed answer is correct
+
+    # For Qwen3 thinking mode: strip <think>...</think> blocks to get the final answer
+    model_output_no_think = re.sub(r'<think>.*?</think>', '', model_output, flags=re.DOTALL).strip()
+
+    # Try extracting from the non-think portion first (final answer area)
+    predict_answer = qwen_extract_answer(model_output_no_think, data_name="math")
+    extract_boxed_answer = extract_last_boxed(model_output_no_think)
+
+    # If no boxed answer found outside think blocks, fall back to full output
+    if extract_boxed_answer is None:
+        predict_answer = qwen_extract_answer(model_output, data_name="math")
+        extract_boxed_answer = extract_last_boxed(model_output)
+
     if extract_boxed_answer is not None:
         return predict_answer, True
     else:

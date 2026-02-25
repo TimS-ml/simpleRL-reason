@@ -45,7 +45,20 @@ elif package_version == '0.6.3':
     from .vllm_v_0_6_3.llm import LLM
     from .vllm_v_0_6_3.llm import LLMEngine
     from .vllm_v_0_6_3 import parallel_state
+elif package_version is not None:
+    # For newer vllm versions, fall back to 0.6.3 integration as best-effort
+    import warnings
+    warnings.warn(
+        f'vllm version {package_version} does not have a dedicated integration. '
+        f'Falling back to 0.6.3 integration. For Qwen3 models, use HF rollout '
+        f'(actor_rollout_ref.rollout.name=hf) instead of vllm rollout.'
+    )
+    vllm_version = '0.6.3'
+    from .vllm_v_0_6_3.llm import LLM
+    from .vllm_v_0_6_3.llm import LLMEngine
+    from .vllm_v_0_6_3 import parallel_state
 else:
     raise ValueError(
-        f'vllm version {package_version} not supported. Currently supported versions are 0.3.1, 0.4.2, 0.5.4 and 0.6.3.'
+        f'vllm is not installed. Please install vllm to use vllm rollout, '
+        f'or use HF rollout (actor_rollout_ref.rollout.name=hf) instead.'
     )
