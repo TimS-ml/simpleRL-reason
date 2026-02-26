@@ -1,0 +1,7 @@
+sweep_name: "lr_sweep"
+sweep_param: "actor.optim.lr"
+values:
+  - 5e-7
+  - 1e-6
+  - 2e-6
+  - 5e-6
