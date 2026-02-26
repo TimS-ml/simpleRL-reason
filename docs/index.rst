@@ -69,6 +69,14 @@ verl is fast with:
    perf/perf_tuning
 
 .. toctree::
+   :maxdepth: 2
+   :caption: Experiment Framework
+
+   experiment/experiment_framework
+   experiment/config_reference
+   experiment/self_evolve
+
+.. toctree::
    :maxdepth: 1
    :caption: Experimental Results
 
@@ -88,6 +96,12 @@ verl is fast with:
    :caption: FAQ
 
    faq/faq
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Changelog
+
+   changelog
 
 Contribution
 -------------
