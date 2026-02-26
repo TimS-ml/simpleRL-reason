@@ -121,3 +121,6 @@ examples/data_preprocess/converted_data
 examples/data_preprocess/data
 
 model_scope_model
+
+# Experiment logs (tracked via W&B, local backup only)
+experiments/logs/*.log
